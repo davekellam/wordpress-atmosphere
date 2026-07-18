@@ -1,0 +1,4 @@
+Significance: minor
+Type: added
+
+A new filter, `atmosphere_publication_basic_theme_colours`, lets theme and plugin authors override the publication's basic theme colours programmatically.

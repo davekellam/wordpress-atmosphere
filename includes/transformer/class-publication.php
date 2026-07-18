@@ -306,6 +306,38 @@ class Publication extends Base {
 			$accent = self::resolve_color( $palette['accent'], $palette );
 		}
 
+		/**
+		 * Filters the basic theme colours before validation.
+		 *
+		 * Allows theme and plugin authors to override the publication's
+		 * background, foreground, and accent colours programmatically
+		 * without editing theme.json. Return an array of {r, g, b}
+		 * colour triples. If any colour is missing, the entire
+		 * basicTheme field is omitted.
+		 *
+		 * @since unreleased
+		 *
+		 * @param array $colours {
+		 *     @type array{r: int, g: int, b: int}|null $background Background colour.
+		 *     @type array{r: int, g: int, b: int}|null $foreground Foreground colour.
+		 *     @type array{r: int, g: int, b: int}|null $accent     Accent colour.
+		 * }
+		 */
+		$colours = \apply_filters(
+			'atmosphere_publication_basic_theme_colours',
+			array(
+				'background' => $background,
+				'foreground' => $foreground,
+				'accent'     => $accent,
+			)
+		);
+
+		if ( \is_array( $colours ) ) {
+			$background = $colours['background'] ?? null;
+			$foreground = $colours['foreground'] ?? null;
+			$accent     = $colours['accent'] ?? null;
+		}
+
 		if ( null === $background || null === $foreground || null === $accent ) {
 			return null;
 		}

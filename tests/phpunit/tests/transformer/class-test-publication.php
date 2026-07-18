@@ -22,6 +22,7 @@ class Test_Publication extends \WP_UnitTestCase {
 	public function tear_down(): void {
 		\remove_all_filters( 'atmosphere_publication_labels' );
 		\remove_all_filters( 'atmosphere_publication_show_in_discover' );
+		\remove_all_filters( 'atmosphere_publication_basic_theme_colours' );
 		\delete_option( 'site_icon' );
 		\update_option( 'blog_public', 1 );
 
@@ -630,6 +631,50 @@ class Test_Publication extends \WP_UnitTestCase {
 			$dark['accentForeground'],
 			'Dark accent should yield white foreground.'
 		);
+	}
+
+	/**
+	 * The atmosphere_publication_basic_theme_colours filter overrides
+	 * the auto-detected theme colours.
+	 */
+	public function test_publication_basic_theme_colours_filter_overrides_colours() {
+		\add_filter(
+			'atmosphere_publication_basic_theme_colours',
+			static fn() => array(
+				'background' => array(
+					'r' => 255,
+					'g' => 255,
+					'b' => 255,
+				),
+				'foreground' => array(
+					'r' => 0,
+					'g' => 0,
+					'b' => 0,
+				),
+				'accent'     => array(
+					'r' => 0,
+					'g' => 102,
+					'b' => 204,
+				),
+			)
+		);
+
+		$styles = array(
+			'color'    => array(
+				'background' => '#ffffff',
+				'text'       => '#000000',
+			),
+			'elements' => array(
+				'link' => array( 'color' => array( 'text' => '#0066cc' ) ),
+			),
+		);
+
+		$record = Publication::build_basic_theme( $styles, array() );
+
+		$this->assertIsArray( $record );
+		$this->assertSame( 255, $record['background']['r'] );
+		$this->assertSame( 0, $record['foreground']['r'] );
+		$this->assertSame( 0, $record['accent']['r'] );
 	}
 
 	/**
